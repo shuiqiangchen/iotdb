@@ -24,7 +24,7 @@ For installation prerequisites, please refer to [Installation Prerequisites](../
 ## Start Service
 Users can build clusters in pseudo-distributed mode or distributed mode. 
 The main difference between pseudo-distributed mode and distributed mode is the difference in `seed_nodes` in the configuration file. 
-For detail descriptions, please refer to [Cluster Configuration Items](#Cluster Configuration Items).
+For detail descriptions, please refer to [Cluster Configuration Items](#cluster-configuration-items).
 
 To start the service of one of the nodes, you need to execute the following commands:
 
@@ -45,6 +45,30 @@ or
 The currently supported items to overwrite the original configurations when starting IoTDB are the followings :
 `internal_meta_port, internal_data_port, cluster_rpc_port, seed_nodes`. 
 When both exist, the specified configuration item will overwrite the configurations in the configuration file.
+
+*Note:* In pseudo-distributed mode, please make sure that the `internal_meta_port, internal_data_port, cluster_rpc_port`
+are different from each other, or you will get the Port already in used exception. You can follow the command below to
+start a 3 nodes IoTDB cluster.
+
+```bash
+# Unix/OS X
+> nohup sbin/start-node.sh -c conf -internal_meta_port 9003 -internal_data_port 40010 -cluster_rpc_port 55560 >logs/log1.log 2>logs/node1.err &
+
+> nohup sbin/start-node.sh -c conf -internal_meta_port 9005 -internal_data_port 40012 -cluster_rpc_port 55561 >logs/log2.log 2>logs/node2.err &
+
+> nohup sbin/start-node.sh -c conf -internal_meta_port 9007 -internal_data_port 40014 -cluster_rpc_port 55562 >logs/log3.log 2>logs/node3.err &
+
+```
+
+Remember to change the `JMX_PORT` to be another port before starting a new node in pseudo-distributed mode, or you will
+get the Port already in used exception.
+
+After all nodes successfully start up, connect to the node via the specified `cluster_rpc_port`, take node-1 for instance:
+```bash
+# Unix/OS X
+> sbin/start-cli.sh -h 127.0.0.1 -p 55560 -u root -pw root
+```
+
 
 ## OverWrite the configurations of Stand-alone node
 
